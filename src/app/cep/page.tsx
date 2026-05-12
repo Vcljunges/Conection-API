@@ -9,15 +9,28 @@ export default function Home() {
     const [searchInput, setSearchInput] = useState("");
 
     const getCep = async () => {
-        if (!searchInput) return;
+        const cleanedCep = searchInput.replace(/\D/g, "");
+        if (!cleanedCep) {
+            alert("Digite um CEP válido!");
+            return;
+        }
         setLoading(true);
         try {
-            const res = await fetch('https://brasilapi.com.br/api/cep/v1/{cep}');
+            const res = await fetch(`https://brasilapi.com.br/api/cep/v1/${cleanedCep}`);
             if (!res.ok) {
                 throw new Error("CEP não encontrado");
             }
             const json = await res.json();
-            setCepData([json]);
+            
+            const mappedCep: Cep = {
+                cep: json.cep,
+                rua: json.street || "Não informada",
+                bairro: json.neighborhood || "Não informado",
+                cidade: json.city || "Não informada",
+                estado: json.state || "Não informado"
+            };
+
+            setCepData([mappedCep]);
         } catch (error) {
             console.log("ERROR: ", error);
             alert("Houve um erro ao buscar o CEP!");
@@ -47,7 +60,7 @@ export default function Home() {
                 </button>
             </div>
 
-            <div className="dark:text-white flex flex-col items-center justify-center border border-zinc-200 rounded-xl bg-gray-900 w-11/12 max-w-2xl min-h-[150px]">
+            <div className="dark:text-white flex flex-col items-center justify-center border border-zinc-200 rounded-xl bg-gray-900 w-11/12 max-w-md">
                 {loading ? (
                     <h1 className="md:text-xl text-lg m-6">Carregando...</h1>
                 ) : cepData.length === 0 ? (
@@ -56,12 +69,13 @@ export default function Home() {
                     <ul className="flex flex-col items-center justify-center p-6 w-full">
                         {cepData.map((cepItem) => (
                             <div key={cepItem.cep} className="w-full">
-                                <li className="dark:text-white flex flex-col sm:flex-row items-center justify-center m-2 text-center">
-                                    <span className="font-bold mr-2 text-blue-400">CEP:</span> {cepItem.cep} |
-                                    <span className="font-bold mx-2 text-blue-400">Rua:</span> {cepItem.rua} |
-                                    <span className="font-bold mx-2 text-blue-400">Bairro:</span> {cepItem.bairro} |
-                                    <span className="font-bold mx-2 text-blue-400">Cidade:</span> {cepItem.cidade} |
-                                    <span className="font-bold mx-2 text-blue-400">Estado:</span> {cepItem.estado}
+                                <hr className="my-2 border-zinc-700" />
+                                <li className="dark:text-white flex flex-col flex-1 items-start justify-start m-2">
+                                    <span className="font-bold mx-2 text-blue-400">CEP: {cepItem.cep}</span>
+                                    <span className="font-bold mx-2 text-blue-400">Rua: {cepItem.rua}</span>
+                                    <span className="font-bold mx-2 text-blue-400">Bairro: {cepItem.bairro}</span>
+                                    <span className="font-bold mx-2 text-blue-400">Cidade: {cepItem.cidade}</span>
+                                    <span className="font-bold mx-2 text-blue-400">Estado: {cepItem.estado}</span>
                                 </li>
                                 <hr className="my-2 border-zinc-700" />
                             </div>
