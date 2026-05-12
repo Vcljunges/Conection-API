@@ -7,6 +7,7 @@ export default function Home() {
     const [cepData, setCepData] = useState<Cep[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchInput, setSearchInput] = useState("");
+    const [error, setError] = useState(false);
 
     const getCep = async () => {
         const cleanedCep = searchInput.replace(/\D/g, "");
@@ -15,13 +16,24 @@ export default function Home() {
             return;
         }
         setLoading(true);
+        setError(false);
+        
+        let status = 0;
+
         try {
-            const res = await fetch(`https://brasilapi.com.br/api/cep/v1/${cleanedCep}`);
-            if (!res.ok) {
-                throw new Error("CEP não encontrado");
-            }
+            const res = await fetch(`https://brasilapi.com.br/api/cep/v2/${cleanedCep}`);
+            status = res.status;
             const json = await res.json();
-            
+
+            if (!res.ok) {
+                console.log(`FAILED: Status ${status}`, json);
+                throw new Error(json.name || "UnknownError");
+            }
+
+            if(json.cep == null) {
+                throw new Error("NotFoundError");
+            }
+        
             const mappedCep: Cep = {
                 cep: json.cep,
                 rua: json.street || "Não informada",
@@ -31,9 +43,22 @@ export default function Home() {
             };
 
             setCepData([mappedCep]);
+            setError(false);
+            console.log("SUCCESS:", mappedCep, `STATUS: ${status}`);
         } catch (error) {
-            console.log("ERROR: ", error);
-            alert("Houve um erro ao buscar o CEP!");
+            const er = error as Error;
+            console.log(`ERROR CAUGHT: Status ${status}`, er.message);
+
+            if(status == 404) {
+                alert("CEP Não encontrado!");
+            }
+            else if(status == 500) {
+                alert("Erro interno no serviço de CEP!");
+            }
+            else if(status == 400) {
+                alert("CEP deve conter exatamente 8 dígitos!");
+            }
+            setError(true);
             setCepData([]);
         } finally {
             setLoading(false);
