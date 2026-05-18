@@ -95,12 +95,27 @@ export default function Home() {
                         {cepData.map((cepItem) => (
                             <div key={cepItem.cep} className="w-full">
                                 <hr className="my-2 border-zinc-700" />
-                                <li className="dark:text-white flex flex-col flex-1 items-start justify-start m-2">
-                                    <span className="font-bold mx-2 text-blue-400">CEP: {cepItem.cep}</span>
-                                    <span className="font-bold mx-2 text-blue-400">Rua: {cepItem.rua}</span>
-                                    <span className="font-bold mx-2 text-blue-400">Bairro: {cepItem.bairro}</span>
-                                    <span className="font-bold mx-2 text-blue-400">Cidade: {cepItem.cidade}</span>
-                                    <span className="font-bold mx-2 text-blue-400">Estado: {cepItem.estado}</span>
+                                <li className="dark:text-white flex flex-col flex-1 items-start justify-start m-2 gap-2 w-full px-4">
+                                    <div className="flex flex-row items-center gap-2">
+                                        <span className="font-bold text-blue-400">CEP:</span>
+                                        <span className="font-semibold text-white">{cepItem.cep}</span>
+                                    </div>
+                                    <div className="flex flex-row items-center gap-2">
+                                        <span className="font-bold text-blue-400">Rua:</span>
+                                        <span className="font-semibold text-white">{cepItem.rua}</span>
+                                    </div>
+                                    <div className="flex flex-row items-center gap-2">
+                                        <span className="font-bold text-blue-400">Bairro:</span>
+                                        <span className="font-semibold text-white">{cepItem.bairro}</span>
+                                    </div>
+                                    <div className="flex flex-row items-center gap-2">
+                                        <span className="font-bold text-blue-400">Cidade:</span>
+                                        <span className="font-semibold text-white">{cepItem.cidade}</span>
+                                    </div>
+                                    <div className="flex flex-row items-center gap-2">
+                                        <span className="font-bold text-blue-400">Estado:</span>
+                                        <span className="font-semibold text-white">{cepItem.estado}</span>
+                                    </div>
                                 </li>
                                 <hr className="my-2 border-zinc-700" />
                             </div>
